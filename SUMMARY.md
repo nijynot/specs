@@ -7,6 +7,7 @@
 * [Storage Market](storage-market.md)
   * [Interface](storage-market.md#the-market-interface)
   * [Deal Flow](storage-market.md#market-flow)
+  * [Client Data Pre-processing](client-data.md)
   * [Storage Miner](miner.md)
 * [Retrieval Market](retrieval-market.md)
 * [Payments](payments.md)
