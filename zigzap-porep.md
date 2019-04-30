@@ -167,7 +167,6 @@ Derive challenges for each layer (call `derive_challenges()`).
 ```
 
 ### Challenge Derivation
-TODO: define `derive_challenges()`
 ```rust
 pub fn derive_challenges<D: Domain>(
     challenges: &LayerChallenges,
@@ -249,6 +248,8 @@ fn parents(&self, node: usize) -> Vec<usize> {
 ## Proof Generation
 
 ```
+let layer_proofs = []
+
 for l in 0..LAYERS {
   let replica = layer_replicas[l]
   let replica_tree = layer_trees[l]
@@ -257,20 +258,24 @@ for l in 0..LAYERS {
     data_inclusion_proof = inclusion_proof(data[c], DataTree, CommR_<l>)
     replica_inclusion_proof = inclusion_proof(replica[c], replica_tree, CommR_<l+1>) || FAIL// Prove the replica. TODO explain replica[].
     
-    let kdf_preimage = [replica_id]
+    // let kdf_preimage = [replica_id]
     let parent_replica_inclusion_proofs = []
     for p in parents(c) {
-      kdf_preimage.push(p)
+      // kdf_preimage.push(p)
       parent_replica_inclusion_proofs.push(inclusion_proof(p, CommR_<l+1>))
     }
-    let key = kdf(kdf_preimage);
+    // let key = kdf(kdf_preimage);
     
-    encode(key, data[c]) == replica[c]
-  }
+    // encode(key, data[c]) == replica[c]  // We don't actually need to encode in the proo. TODO: move this stuff to verification.
+
+    layer_proof.push((data_inclusion_proof, replication_inclusion_proof, parent_replica_inclusion_proofs))    
+  } 
 }
+
+return layer_proofs, CommRstar, CommRLast
 ```
 
-
+TODO: reconcile outputs of non-circuit proof with inputs to circuit proof.
 
 ## Circuit Proof Generation
 See [# ZigZag: Offline PoRep Circuit Spec](zigzag-circuit.md) for details of Circuit Proof Generation.
