@@ -33,6 +33,8 @@ func WriteCborRPC(w io.Writer, obj Object) {
 }
 ```
 
+Note: Implementations should limit the maximum number of bytes read during the `ReadCborRPC` call. We suggest 1MB as a sane limit.
+
 # Hello Handshake
 
 The Hello protocol is used when two filecoin nodes initially connect to eachother in order to determine information about the other node. The libp2p protocol ID for this protocol is `/fil/hello/1.0.0`.
