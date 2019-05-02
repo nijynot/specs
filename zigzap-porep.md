@@ -11,7 +11,6 @@ DRG with connections in the opposite direction (and using the same random seed) 
 For the algorithm to have the desired properties, it is important that the expansion components are directly inverted at each layer.
 However, it is fortunately not necessary that the base DRG components also have this property.
 
-## Hash Functions
 
 __*Filecoin ZigZag Proof of Replication*__ is the process by which raw data is transformed into a replica and a proof of replication.
 
@@ -24,11 +23,13 @@ This comprises the following steps:
  
  Together, __*Replication*__, __*Proof Generation*__, and __*Circuit Proof Generation*__ constitute the `Seal` operation, as described in [Filecoin Proofs](proofs.md).
  
+## Hash Functions
+
  *__Filecoin ZigZag Proof of Replication__ as described here is generic over the following hash functions:*
 
-  - KDF hash: a digest hash function with 32-byte digest size: default Blake2s
-  - CommR Hash: a digest hash function with 32-byte digest size: default Blake2s
-  - RepCompress: a digest hash function with 32-byte digest size: default pedersen hashing over jubjub curve.
+  - KDF hash: a hash function with 32-byte digest size: default is Blake2s
+  - CommR Hash: a hash function with 32-byte digest size: default is Blake2s
+  - RepCompress: a hash function with 32-byte digest size: default is pedersen hashing over jubjub curve.
 
 ## Preprocessing
 
