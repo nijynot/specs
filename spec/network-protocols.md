@@ -33,7 +33,7 @@ func WriteCborRPC(w io.Writer, obj Object) {
 }
 ```
 
-# Hello Handshake
+## Hello Handshake
 
 The Hello protocol is used when two filecoin nodes initially connect to eachother in order to determine information about the other node. The libp2p protocol ID for this protocol is `/fil/hello/1.0.0`.
 
@@ -58,7 +58,7 @@ func SayHello(p PeerID) {
 
 Upon receiving a 'hello' stream from another node, you should read off the CBOR RPC message, and then check that the genesis hash matches you genesis hash. If it does not, that node is not part of your network, and should probably be disconnected from. Next, the `HeaviestTipSet`, claimed `HeaviestTipSetWeight`, and peerID of the other node should be passed to the chain sync subsystem.
 
-# Storage Deal
+## Storage Deal
 
 The storage deal protocol is used by any client to store data with a storage miner. The libp2p protocol ID for this protocol is `/fil/storage/mk/1.0.0`.
 
@@ -126,6 +126,7 @@ type PaymentInfo struct {
 ```
 
 ### Deal State Values
+
 Legal values for `DealState` are as follows:
 
 ```go
@@ -372,7 +373,7 @@ type StorageDealQuery struct {
 If `BaseState` is `Unset` or a terminal state (`Complete`, `Rejected`, or `Failed`) then the current state of the deal in question is returned. If the `BaseState` is different than the current state of the deal, the current state of the deal is also returned immediately. In the case that the `BaseState` matches the current state of the deal, then the stream is held open until the state changes, at which point the new state of the deal is returned.
 
 
-# Retrieve Piece for Free
+## Retrieve Piece for Free
 
 The Retrieve Piece for Free protocol is used to coordinate the transfer of a piece from miner to client at no cost to the client.
 
@@ -441,7 +442,7 @@ type RetrievePieceChunk struct {
 
 TODO: document the query deal interaction
 
-# BlockSync
+## BlockSync
 
 The blocksync protocol is a small protocol that allows Filecoin nodes to request ranges of blocks from each other. It is a simple request/response protocol with a protocol ID of `/fil/sync/blk/0.0.0`. It uses CBOR-RPC.
 
@@ -484,4 +485,3 @@ const (
 	InternalError = 203
 )
 ```
-

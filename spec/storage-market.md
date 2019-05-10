@@ -1,6 +1,6 @@
 # The Filecoin Storage Market
 
-### What is the Filecoin Storage Market
+## What is the Filecoin Storage Market
 
 The Filecoin `storage market` is the underlying system used to discover, negotiate and form `storage contracts` between clients and storage providers called `storage miners` in a Filecoin network. The `storage market` itself is an `actor` that helps to mediate certain operations in the market, including adding new miners, and punishing faulty ones, it does not directly mediate any actual storage deals. The `storage contracts` between clients and miners specify that a given `piece` will be stored for a given time duration. It is assumed that the `client`, or some delegate of the client, remains online to monitor the `storage miner` and `slash` it in the case that the agreed upon data is removed from the miners proving set before the deal is finished.
 
@@ -68,7 +68,7 @@ The storage market contains the following data:
 
 This section describes the flow required to store a single piece with a single storage miner. Most use-cases will involve performing this process for multiple pieces, with different miners.
 
-#### Before Deal
+### Before Deal
 
 1. **Merkle Translation:** The client runs a 'Local Merkle Translation' to generate the storage market hash for the data.
   - Storage miners reference data by its storage market hash, and not by its standard hash. This step is needed for the client to be able to trust their data was correctly included in the miners sector. See [Piece Inclusion Proof](definitions.md#piece-inclusion-proof)
@@ -77,7 +77,7 @@ This section describes the flow required to store a single piece with a single s
 3. **Payment Channel Setup:** The client calls [`Payment.Setup`](#payments) with the piece and the funds they are going to pay the miner with. All payments between clients and storage providers use payment channels.
 
 
-#### Deal
+### Deal
 
 Note: The details of this protocol including formats, datastructures, and algorithms, can be found [here](network-protocols.md#storage-deal).
 
@@ -102,7 +102,7 @@ Note: The details of this protocol including formats, datastructures, and algori
    - **Mining**: Miner posts `seal commitment` and associated proof on chain by calling `CommitSector` and starts running `proofs of spacetime`. See [storage mining cycle](mining.md#storage-mining-cycle) for more details.
 
 3. **Storage Deal Abort:** If the miner doesn't provide the PieceInclusionProof, the client can invalidate the payment channel.
-   - This is done by invoking the 'close' method on the channel on-chain. This process starts a timer that, on finishing, will release the funds to the client. 
+   - This is done by invoking the 'close' method on the channel on-chain. This process starts a timer that, on finishing, will release the funds to the client.
    - If a client attempts to abort a deal that they have actually made with a miner, the miner can submit a payment channel update to force the channel to stay open for the length of the agreement.
 
 4. **Storage Deal Complete:** The client periodically queries the miner for the deals status until the deal is 'complete', at which point the client knows that the data is properly replicated.
@@ -167,6 +167,6 @@ For details on the implementation of the payments system, see [the payments doc]
 - Slashable Commitments
   - When miners initially receive the data for a deal with a client, that signed response statement can be used to slash the miner in the event that they never include that data in a sector.
 
-# Open questions
+## Open questions
 
 - Storage time should likely be designated in terms of proving period. Where a proving period is the number of blocks in which every miner must submit a proof for their sectors. Not doing this makes accounting hard: "when exactly did this sector fail?"

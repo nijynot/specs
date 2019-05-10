@@ -20,11 +20,12 @@ type Address struct {
 	payload []byte
 }
 ```
+
 To learn more, take a look at the [Address Spec](https://github.com/filecoin-project/specs/blob/master/address.md).
 
 ## CID
 
-For most objects referenced by Filecoin, a Content Identifier (CID for short) is used. This is effectively a hash value, prefixed with its hash function (multihash) prepended with a few extra labels to inform applications about how to deserialize the given data. To learn more, take a look at the [CID Spec](https://github.com/ipld/cid). 
+For most objects referenced by Filecoin, a Content Identifier (CID for short) is used. This is effectively a hash value, prefixed with its hash function (multihash) prepended with a few extra labels to inform applications about how to deserialize the given data. To learn more, take a look at the [CID Spec](https://github.com/ipld/cid).
 
 CIDs are serialized by applying binary multibase encoding, then encoding that as a CBOR byte array with a tag of 42.
 
@@ -68,7 +69,7 @@ type Block struct {
 	// MessageReceipts is a set of receipts matching to the sending of the `Messages`.
 	// TODO: should be the same type of merkletree-list thing that the messages are
 	MessageReceipts []MessageReceipt
-    
+
     // The block Timestamp is used to enforce a form of block delay by honest miners.
     // Unix time UTC timestamp stored as an unsigned integer
     Timestamp Timestamp
@@ -157,9 +158,7 @@ The state trie keeps track of all state in Filecoin. It is a map of addresses to
 
 ## HAMT
 
-{% hint style='working' %}
-**TODO**: link to spec for our CHAMP HAMT
-{% endhint %}
+TODO: link to spec for our CHAMP HAMT
 
 
 ## Signature
@@ -178,7 +177,7 @@ type Signature struct {
 | Key Type | Value |
 |-------|----------|
 |  Secp256k1 | 1 |
-| BLS12-381 ECDSA | 2 | 
+| BLS12-381 ECDSA | 2 |
 
 ### Serialization
 
@@ -188,51 +187,53 @@ Note: As signatures should always be within wrapper types, length prefixing is n
 
 
 
-# Basic Type Encodings
+## Basic Type Encodings
 
 Types that appear in messages or in state must be encoded as described here.
 
-#### `PublicKey`
+### `PublicKey`
 
 The public key type is simply an array of bytes. (TODO: discuss specific encoding of key types, for now just calling it bytes is sufficient)
 
-#### `BytesAmount`
+### `BytesAmount`
+
 BytesAmount is just a re-typed Integer.
 
-#### `PeerID`
+### `PeerID`
+
 PeerID is just the serialized bytes of a libp2p peer ID.
 
 Spec incomplete, take a look at this PR: https://github.com/libp2p/specs/pull/100
 
-#### `Integer`
+### `Integer`
 
 Integers are encoded as LEB128 signed integers.
 
-#### `BitField`
+### `BitField`
 
 Bitfields are a set of bits. Encoding still TBD, but it needs to be very compact. We can assume that most often, ranges of bits will be set, or not set, and use that to our advantage here. Some form of run length encoding may work well.
 
-#### `SectorSet`
+### `SectorSet`
 
 TODO
 
-#### `FaultSet`
+### `FaultSet`
 
 A fault set is a BitField and a block height, encoding TBD.
 
-#### `BlockHeader`
+### `BlockHeader`
 
 BlockHeader is a serialized `Block`.
 
-#### `SealProof`
+### `SealProof`
 
 SealProof is a 384-element array of bytes.
 
-#### `PoStProof`
+### `PoStProof`
 
 PoStProof is a 192-element array of bytes.
 
-#### `TokenAmount`
+### `TokenAmount`
 
 TokenAmount is a re-typed Integer.
 
@@ -243,7 +244,7 @@ TokenAmount is a re-typed Integer.
 
 This is taken from the Dwarf Standard 4, Appendix C
 
-#### Encode unsigned LEB128
+### Encode unsigned LEB128
 
 ```c
 do
@@ -254,7 +255,6 @@ do
     set high order bit of byte;
   emit byte;
 } while (value != 0);
-
 ```
 
 #### Encode signed LEB128
@@ -319,7 +319,7 @@ if ((shift <size) && (sign bit of byte is set))
   result |= - (1 << shift);
 ```
 
-# Filecoin Compact Serialization
+## Filecoin Compact Serialization
 
 Datastructures in Filecoin are encoded as compactly as is reasonable. At a high level, each object is converted into an ordered array of its fields (ordered by their appearance in the struct declaration), then CBOR marshaled, and prepended with an object type tag.
 
@@ -343,7 +343,7 @@ Each individual type should be encoded as specified:
 | BigInteger | [CBOR bignum](https://tools.ietf.org/html/rfc7049#section-2.4.2) |
 | Address | CBOR major type 2 |
 | Uint8 | CBOR Major type 0 |
-| []byte | CBOR Major type 2 |
+| \[\]byte | CBOR Major type 2 |
 | string | CBOR Major type 3 |
 | bool | [CBOR Major type 7, value 20/21](https://tools.ietf.org/html/rfc7049#section-2.3) |
 
@@ -360,34 +360,3 @@ Cids for FCS objects should use the FCS multicodec (`0x1f`).
 ## Vectors
 
 Below are some sample vectors for each data type.
-
-### Message
-
-Encoded: `d82c865501fd1d0f4dfcd7e99afcb99a8326b7dc459d32c6285501b882619d46558f3d9e316d11b48dcf211327026a1875c245037e11d600666d6574686f644d706172616d73617265676f6f64`
-
-Decoded:
-```
-To:     Address("f17uoq6tp427uzv7fztkbsnn64iwotfrristwpryy")
-From:   Address("f1xcbgdhkgkwht3hrrnui3jdopeejsoatkzmoltqy")
-Nonce:  uint64(117)
-Value:  BigInt(15000000000)
-Method: string("method")
-Params: []byte("paramsaregood")
-```
-
-### Block
-
-Encoded: `d82b895501fd1d0f4dfcd7e99afcb99a8326b7dc459d32c628814a69616d617469636b6574566920616d20616e20656c656374696f6e2070726f6f6681d82a5827000171a0e40220ce25e43084e66e5a92f8c3066c00c0eb540ac2f2a173326507908da06b96f678c242bb6a1a0012d687d82a5827000171a0e40220ce25e43084e66e5a92f8c3066c00c0eb540ac2f2a173326507908da06b96f6788080`
-
-Decoded:
-```
-Miner:           Address("f17uoq6tp427uzv7fztkbsnn64iwotfrristwpryy")
-Tickets:         [][]byte{"iamaticket"}
-ElectionProof:   []byte("i am an election proof")
-Parents:         []Cid{"zDPWYqFD5abn4FyknPm1PibXdJ2kwRNVPDabKyzfdXVJGjnDuq4B"}
-ParentWeight:    NewInt(47978)
-Height:          uint64(1234567)
-StateRoot:       Cid("zDPWYqFD5abn4FyknPm1PibXdJ2kwRNVPDabKyzfdXVJGjnDuq4B")
-Messages:        []SignedMessage{}
-MessageReceipts: []MessageReceipt{}
-```

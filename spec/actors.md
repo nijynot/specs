@@ -22,6 +22,7 @@ Some state machine actors are 'system' actors that get instantiated in the genes
 
 
 ## Init Actor
+
 The init actor is responsible for creating new actors on the filecoin network. This is a built-in actor and cannot be replicated. In the future, this actor will be responsible for loading new code into the system (for user programmable actors). ID allocation for user instantiated actors starts at 100. This means that `NextID` will initially be set to 100.
 
 ```go
@@ -34,6 +35,7 @@ type InitActor struct {
 ```
 
 ### Code Cid
+
 `<codec:raw><mhType:identity><"init">`
 
 | Index     | Method Name       |
@@ -141,6 +143,7 @@ type AccountActor struct {
 ```
 
 ### Code Cid
+
 `<codec:raw><mhType:identity><"account">`
 
 
@@ -158,7 +161,9 @@ type StorageMarketActor struct {
 	TotalStorage BytesAmount
 }
 ```
+
 ### Code Cid
+
 `<codec:raw><mhType:identity><"smarket">`
 
 | Index     | Method Name       |
@@ -371,6 +376,7 @@ type StorageMiner struct {
 ```
 
 ### Code Cid
+
 `<codec:raw><mhType:identity><"sminer">`
 
 | Index     | Method Name       |
@@ -393,6 +399,7 @@ type StorageMiner struct {
 ### Constructor
 
 Along with the call, the actor must be created with exactly enough filecoin for the collateral necessary for the pledge.
+
 ```go
 func StorageMinerActor(pubkey PublicKey, pledge BytesAmount, pid PeerID) {
 	if msg.Value < CollateralForPledgeSize(pledge) {
@@ -405,7 +412,6 @@ func StorageMinerActor(pubkey PublicKey, pledge BytesAmount, pid PeerID) {
 	self.PledgeBytes = pledge
 }
 ```
-
 
 ### AddAsk
 
@@ -826,12 +832,12 @@ TODO
 A basic multisig account actor. Allows sending of messages like a normal account actor, but with the requirement of M of N parties agreeing to the operation. Completed and/or cancelled operations stick around in the actors state until explicitly cleared out. Proposers may cancel transactions they propose, or transactions by proposers who are no longer approved signers.
 
 Self modification methods (add/remove signer, change requirement) are called by
-doing a multisig transaction invoking the desired method on the contract itself. This means the 'signature 
+doing a multisig transaction invoking the desired method on the contract itself. This means the 'signature
 threshold' logic only needs to be implemented once, in one place.
 
 The [init actor](#init-actor) is used to create new instances of the multisig.
 
-#### State
+### State
 
 ```go
 type Multisig struct {
@@ -856,6 +862,7 @@ type Transaction struct {
 ```
 
 ### Code Cid
+
 `<codec:raw><mhType:identity><"multisig">`
 
 | Index     | Method Name       |
@@ -868,7 +875,6 @@ type Transaction struct {
 | 5 | `RemoveSigner` |
 | 6 | `SwapSigner` |
 | 7 | `ChangeRequirement` |
-
 
 #### Constructor
 
@@ -1096,4 +1102,3 @@ func getTransaction(txid int) Transaction {
 	return tx
 }
 ```
-

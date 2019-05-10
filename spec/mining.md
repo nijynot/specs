@@ -1,4 +1,6 @@
-### What is the Filecoin Mining Process
+# Mining
+
+## What is the Filecoin Mining Process
 
 An active participant in the filecoin consensus process is a storage miner and expected consensus block proposer. They are responsible for storing data for the filecoin network and also for driving the filecoin consensus process. Miners should constantly be performing Proofs of SpaceTime, and also checking if they have a winning `ticket` to propose a block for each round. Rounds are currently set to take around 30 seconds, in order to account for network propagation around the world. The details of both processes are defined here.
 
@@ -23,7 +25,7 @@ Storage miners must continually produce Proofs of SpaceTime over their storage t
 
 To initially become a miner, a miner first register a new miner actor on-chain. This is done through the storage market actor's [`CreateMiner`](actors.md#createstorageminer) method. The call will then create a new miner actor instance and return its address.
 
-The next step is to place one or more storage market asks on the market. This is done through the storage markets [`AddAsk`](actors.md#addask) method. A miner may create a single ask for their entire storage, or partition their storage up in some way with multiple asks (at potentially different prices). 
+The next step is to place one or more storage market asks on the market. This is done through the storage markets [`AddAsk`](actors.md#addask) method. A miner may create a single ask for their entire storage, or partition their storage up in some way with multiple asks (at potentially different prices).
 
 After that, they need to make deals with clients and begin filling up sectors with data. For more information on making deals, see the section on [deal](storage-market.md#deal).
 
@@ -86,7 +88,7 @@ If a miner is slashed for failing to submit their PoSt on time, they currently l
 
 TODO: disambiguate the two collaterals across the entire spec
 
-Review Discussion Note: Taking all of a miners collateral for going over the deadline for PoSt submission is really really painful, and is likely to dissuade people from even mining filecoin in the first place (If my internet going out could cause me to lose a very large amount of money, that leads to some pretty hard decisions around profitability). One potential strategy could be to only penalize miners for the amount of sectors they could have generated in that timeframe. 
+Review Discussion Note: Taking all of a miners collateral for going over the deadline for PoSt submission is really really painful, and is likely to dissuade people from even mining filecoin in the first place (If my internet going out could cause me to lose a very large amount of money, that leads to some pretty hard decisions around profitability). One potential strategy could be to only penalize miners for the amount of sectors they could have generated in that timeframe.
 
 ## Mining Blocks
 
@@ -118,7 +120,7 @@ func VerifyBlock(blk Block) {
     if !ValidateSignature(blk.Signature, pubk, blk) {
         Fatal("invalid block signature")
     }
-    
+
     // 2. Verify Timestamp
     // first check that it is not in the future
     if blk.GetTime() > time.Now() {
@@ -138,23 +140,23 @@ func VerifyBlock(blk Block) {
     if !VerifyTickets(blk) {
         Fatal("tickets were invalid")
     }
-    
+
     // 5. Verify ElectionProof
     randomnessLookbackTipset := RandomnessLookback(blk)
     lookbackTicket := minTicket(randomnessLookbackTipset)
     challenge := sha256.Sum(lookbackTicket)
-    
+
     if !ValidateSignature(blk.ElectionProof, pubk, challenge) {
         Fatal("election proof was not a valid signature of the last ticket")
     }
-    
+
     powerLookbackTipset := PowerLookback(blk)
     minerPower := GetPower(powerLookbackTipset.state, blk.Miner)
     totalPower := GetTotalPower(powerLookbackTipset.state)
     if !IsProofAWinner(blk.ElectionProof, minerPower, totalPower) {
         Fatal("election proof was not a winner")
     }
-        
+
     // 6. Verify StateRoot
     state := GetParentState(blk.Parents)
     for i, msg := range blk.Messages {
@@ -217,7 +219,7 @@ If all of this lines up, the block is valid. The miner repeats this for all bloc
 
 Once they've ensured all blocks in the heaviest TipSet received were properly mined, they can mine on top of it. If they weren't, the miner may need to ensure the next heaviest `Tipset` was properly mined. This might mean the same `Tipset` with invalid blocks removed, or an altogether different one.
 
-If no valid blocks are received, a miner may mine atop the same `TipSet` running leader election again using the next ticket in the ticket chain, and also generating a [new ticket](./expected-consensus.md#losing-tickets) in the process (see the [expected consensus spec](./expected-consensus.md) for more). 
+If no valid blocks are received, a miner may mine atop the same `TipSet` running leader election again using the next ticket in the ticket chain, and also generating a [new ticket](./expected-consensus.md#losing-tickets) in the process (see the [expected consensus spec](./expected-consensus.md) for more).
 
 ### Ticket Generation
 
@@ -260,7 +262,7 @@ To create a block, the eligible miner must compute a few fields:
   - For each block in the parent set, ordered by their tickets:
     - Apply each message in the block to the parent state, in order. If a message was already applied in a previous block, skip it.
     - Transaction fees are given to the miner of the block that the first occurance of the message is included in. If there are two blocks in the parent set, and they both contain the exact same set of messages, the second one will receive no fees.
-    - It is valid for messages in two different blocks of the parent set to conflict, that is, A conflicting message from the combined set of messages will always error.  Regardless of conflicts all messages are applied to the state. 
+    - It is valid for messages in two different blocks of the parent set to conflict, that is, A conflicting message from the combined set of messages will always error.  Regardless of conflicts all messages are applied to the state.
     - TODO: define message conflicts in the state-machine doc, and link to it from here
 - `MsgRoot` - To compute this:
   - Select a set of messages from the mempool to include in the block.
@@ -285,9 +287,7 @@ Each message should be applied on the resultant state of the previous message ex
 
 The miner merklizes the set of messages selected, and put the root in `MsgRoot`. They gather the receipts from each execution into a set, merklize them, and put that root in `ReceiptsRoot`. Finally, they set the `StateRoot` field with the resultant state.
 
-{% hint style='info' %}
-Note that the `ParentState` field from the expected consensus document is left out, this is to help minimize the size of the block header. The parent state for any given parent set should be computed by the client and cached locally.
-{% endhint %}
+Note: Note that the `ParentState` field from the expected consensus document is left out, this is to help minimize the size of the block header. The parent state for any given parent set should be computed by the client and cached locally.
 
 Finally, the miner can generate a Unix Timestamp to add to their block, to show that the block generation was appropriately delayed.
 
@@ -328,12 +328,13 @@ HalvingPeriodBlocks = 6 * 365 * 24 * 60 * 2
 
 Note: Due to jitter in EC, and the gregorian calendar, there may be some error in the issuance schedule over time. This is expected to be small enough that it's not worth correcting for. Additionally, since the payout mechanism is transferring from the network account to the miner, there is no risk of minting *too much* FIL.
 
-### Open Questions
+## Open Questions
 
 - How should receipts for tipsets 'virtual blocks' be referenced? It is common for applications to provide the merkleproof of a receipt to prove that a transaction was successfully executed.
 
 
-### Future Work
+## Future Work
+
 There are many ideas for improving upon the storage miner, here are ideas that may be potentially implemented in the future.
 
 - **Sector Resealing**: Miners should be able to 're-seal' sectors, to allow them to take a set of sectors with mostly expired pieces, and combine the not-yet-expired pieces into a single (or multiple) sectors.

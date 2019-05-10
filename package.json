@@ -1,0 +1,23 @@
+{
+  "name": "specs",
+  "version": "0.1.0",
+  "description": "This repo contains the documents that comprise the Filecoin spec.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "spec-md ./spec/Filecoin.md > ./index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filecoin-project/specs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/filecoin-project/specs/issues"
+  },
+  "homepage": "https://github.com/filecoin-project/specs#readme",
+  "devDependencies": {
+    "spec-md": "^0.6.0"
+  }
+}
